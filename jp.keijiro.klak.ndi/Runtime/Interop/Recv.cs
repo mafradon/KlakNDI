@@ -54,12 +54,27 @@ public class Recv : SafeHandleZeroOrMinusOneIsInvalid
     public bool SetTally(in Tally tally)
       => _SetTally(this, tally);
 
-    #endregion
+        public bool GetKVM()
+           => _kvm_is_supported(this);
+        public bool Send_Leftclick_Down()
+            => _kvm_Leftclick_Down(this);
 
-    #region Unmanaged interface
+        public bool Send_Leftclick_Up()
+            => _kvm_Leftclick_Up(this);
+        public bool Send_keydown(Int32 key)
+            => _kvm_Send_key_Down(this, key);
+        public bool Send_keyup(Int32 key)
+            => _kvm_Send_key_Up(this, key);
 
-    // Constructor options (equivalent to NDIlib_recv_create_v3_t)
-    [StructLayout(LayoutKind.Sequential)]
+        public bool Send_Mouse_Position(in float X, in float Y)
+            => NDIlib_recv_kvm_send_mouse_position(this, new float[] { X, Y });
+
+        #endregion
+
+        #region Unmanaged interface
+
+        // Constructor options (equivalent to NDIlib_recv_create_v3_t)
+        [StructLayout(LayoutKind.Sequential)]
     public struct Settings
     {
         public Source Source;
@@ -86,8 +101,44 @@ public class Recv : SafeHandleZeroOrMinusOneIsInvalid
     [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_set_tally")]
     [return: MarshalAs(UnmanagedType.U1)]
     static extern bool _SetTally(Recv recv, in Tally tally);
+        
+        [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_kvm_is_supported")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool _kvm_is_supported(Recv recv);
 
-    #endregion
-}
+        [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_kvm_send_left_mouse_click")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool _kvm_Leftclick_Down(Recv recv);
+
+        [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_kvm_send_left_mouse_release")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+
+        static extern bool _kvm_Leftclick_Up(Recv recv);
+
+        [DllImport(Config.DllName)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+
+        private unsafe static extern bool NDIlib_recv_kvm_send_mouse_position(Recv recv, float* ptr, UIntPtr length);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static bool NDIlib_recv_kvm_send_mouse_position(Recv recv, float[] data)
+        {
+            unsafe
+            {
+                fixed (float* ptr = data)
+                {
+                    return NDIlib_recv_kvm_send_mouse_position(recv, ptr, (UIntPtr)data.Length);
+                }
+            }
+        }
+
+        [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_kvm_send_keyboard_press")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool _kvm_Send_key_Down(Recv recv, Int32 key);
+        [DllImport(Config.DllName, EntryPoint = "NDIlib_recv_kvm_send_keyboard_release")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool _kvm_Send_key_Up(Recv recv, Int32 key);
+
+        #endregion
+    }
 
 } // namespace Klak.Ndi.Interop
