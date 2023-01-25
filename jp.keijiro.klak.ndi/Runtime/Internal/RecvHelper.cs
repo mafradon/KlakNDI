@@ -25,10 +25,25 @@ static class RecvHelper
         return Interop.Recv.Create(opt);
     }
 
-    public static Interop.VideoFrame? TryCaptureVideoFrame(Interop.Recv recv)
+    public static Interop.VideoFrame? TryCaptureVideoFrame(Interop.Recv recv,Interop.KVMdata kvm)
     {
+            
         Interop.VideoFrame video;
         var type = recv.Capture(out video, IntPtr.Zero, IntPtr.Zero, 0);
+            if (recv.GetKVM())
+            {
+                
+                recv.Send_Mouse_Position(kvm.MouseX, kvm.MouseY);
+                
+                if (kvm.TouchD)
+                {
+                    recv.Send_Leftclick_Down();
+                }
+                else
+                {
+                    recv.Send_Leftclick_Up();
+                }
+            }
         if (type != Interop.FrameType.Video) return null;
         return (Interop.VideoFrame?)video;
     }

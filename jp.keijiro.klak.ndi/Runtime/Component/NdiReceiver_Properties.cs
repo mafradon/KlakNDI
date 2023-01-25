@@ -30,6 +30,12 @@ public sealed partial class NdiReceiver : MonoBehaviour
       { get => _targetTexture;
         set => _targetTexture = value; }
 
+    [SerializeField] GameObject _targetKVM = null;
+
+        public GameObject targetKVM
+      { get => _targetKVM;
+        set => _targetKVM = value;  }
+
     [SerializeField] Renderer _targetRenderer = null;
 
     public Renderer targetRenderer
@@ -41,12 +47,14 @@ public sealed partial class NdiReceiver : MonoBehaviour
     public string targetMaterialProperty
       { get => _targetMaterialProperty;
         set => _targetMaterialProperty = value; }
+        
+    
 
-    #endregion
+        #endregion
 
-    #region Runtime property
+        #region Runtime property
 
-    public RenderTexture texture => _converter?.LastDecoderOutput;
+        public RenderTexture texture => _converter?.LastDecoderOutput;
 
     public string metadata { get; set; }
 

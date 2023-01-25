@@ -6,12 +6,22 @@
       "scopes": [
         "jp.keijiro"
       ]
+    },
+    {
+      "name": "Unity NuGet",
+      "url": "https://unitynuget-registry.azurewebsites.net",
+      "scopes": [
+        "org.nuget"
+      ]
     }
   ],
   "dependencies": {
     "com.unity.ugui": "1.0.0",
     "jp.keijiro.klak.ndi": "file:../../jp.keijiro.klak.ndi",
     "jp.keijiro.testcards": "1.0.0",
-    "com.unity.modules.androidjni": "1.0.0"
+    "org.nuget.system.memory": "4.5.3",
+    "com.unity.modules.androidjni": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.physics2d": "1.0.0"
   }
 }

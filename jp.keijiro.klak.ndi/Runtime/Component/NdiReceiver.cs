@@ -1,5 +1,6 @@
 ﻿using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using IntPtr = System.IntPtr;
 using Marshal = System.Runtime.InteropServices.Marshal;
 
@@ -11,10 +12,13 @@ public sealed partial class NdiReceiver : MonoBehaviour
     #region Receiver objects
 
     Interop.Recv _recv;
-    FormatConverter _converter;
+       public Interop.KVMdata KVM = new Interop.KVMdata();
+        FormatConverter _converter;
     MaterialPropertyBlock _override;
+       
+       
 
-    void PrepareReceiverObjects()
+        void PrepareReceiverObjects()
     {
         if (_recv == null) _recv = RecvHelper.TryCreateRecv(ndiName);
         if (_converter == null) _converter = new FormatConverter(_resources);
@@ -41,8 +45,10 @@ public sealed partial class NdiReceiver : MonoBehaviour
         PrepareReceiverObjects();
         if (_recv == null) return null;
 
-        // Video frame capturing
-        var frameOrNull = RecvHelper.TryCaptureVideoFrame(_recv);
+            // Video frame capturing
+
+            var frameOrNull = RecvHelper.TryCaptureVideoFrame(_recv,KVM);
+
         if (frameOrNull == null) return null;
         var frame = (Interop.VideoFrame)frameOrNull;
 
@@ -79,8 +85,10 @@ public sealed partial class NdiReceiver : MonoBehaviour
         var rt = TryReceiveFrame();
         if (rt == null) return;
 
-        // Material property override
-        if (targetRenderer != null)
+            
+        
+            // Material property override
+            if (targetRenderer != null)
         {
             targetRenderer.GetPropertyBlock(_override);
             _override.SetTexture(targetMaterialProperty, rt);
@@ -89,7 +97,10 @@ public sealed partial class NdiReceiver : MonoBehaviour
 
         // External texture update
         if (targetTexture != null) Graphics.Blit(rt, targetTexture);
-    }
+
+            
+
+        }
 
     #endregion
 }
